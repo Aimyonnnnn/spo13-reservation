@@ -1,8 +1,8 @@
+numpy==1.23.5
+opencv-python-headless==4.8.0.74
 selenium==4.15.2
 webdriver-manager==4.0.1
 schedule==1.2.1
-opencv-python-headless==4.8.0.74
-# CPU 전용 torch 설치
 --find-links https://download.pytorch.org/whl/torch_stable.html
 torch==2.0.0+cpu
 torchvision==0.15.1+cpu
