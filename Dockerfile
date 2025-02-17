@@ -26,6 +26,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# 크롬 드라이버 디렉토리 생성 및 권한 설정
+RUN mkdir -p /root/.wdm/drivers && \
+    chmod -R 777 /root/.wdm
+
 # 애플리케이션 복사
 COPY . .
 
