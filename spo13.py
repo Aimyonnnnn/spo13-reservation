@@ -218,7 +218,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
 
         # 예약 시간까지 대기
         print("CAPTCHA 완료, 예약 시간 대기 중...")
-        wait_for_target_time(9, 0, 6)  # 반드시 09:00:06까지 대기
+        wait_for_target_time(9, 0, 7)  # 반드시 09:00:06까지 대기
 
         # 최종 예약 버튼 클릭
         print("최종 예약 버튼 클릭")
@@ -260,7 +260,9 @@ def run_reservation():
 def main():
     print("예약 스케줄러 초기화 중...")
     # 매주 월요일 08:58에 실행되도록 설정
-    schedule.every().monday.at("08:58").do(run_reservation)
+    # schedule.every().monday.at("08:58").do(run_reservation)
+    schedule.every().day.at("08:58").do(run_reservation)
+
     
     print("스케줄러 시작됨. 다음 실행 시각까지 대기 중...")
     while True:
