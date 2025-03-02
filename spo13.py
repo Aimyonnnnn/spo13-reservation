@@ -242,7 +242,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
 
         # 예약 시간까지 대기
         print("CAPTCHA 완료, 예약 시간 대기 중...")
-        wait_for_target_time(9, 0, 6)  # 반드시 09:00:06까지 대기
+        wait_for_target_time(9, 0, 7)  # 반드시 09:00:06까지 대기
 
         # 최종 예약 버튼 클릭
         print("최종 예약 버튼 클릭")
