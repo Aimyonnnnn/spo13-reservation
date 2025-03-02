@@ -15,30 +15,30 @@ import os
 # 실제 운영용 설정
 reservation_settings = [
     {   
-        "username": "fnlunasea1",
-        "password": "luna9833!",
-        "place": "21",
-        "time_no": "693",
-        "team_name": "임선수",
-        "users": "4",
-        "purpose": "테니스",
-        "discount_reason": "다자녀가정"
+        #"username": "fnlunasea1",
+        #"password": "luna9833!",
+        #"place": "21",
+        #"time_no": "693",
+        #"team_name": "임선수",
+        #"users": "4",
+        #"purpose": "테니스",
+        #"discount_reason": "다자녀가정"
     },
     {   
-        "username": "hg8501081",
-        "password": "nigimi36!!",
-        "place": "23",
-        "time_no": "741",
-        "team_name": "김형균",
-        "users": "4",
-        "purpose": "테니스",
-        "discount_reason": "다자녀가정"
+        #"username": "hg8501081",
+        #"password": "nigimi36!!",
+        #"place": "23",
+        #"time_no": "741",
+        #"team_name": "김형균",
+        #"users": "4",
+        #"purpose": "테니스",
+        #"discount_reason": "다자녀가정"
     },
     {   
         "username": "jihae0716",
         "password": "Wlgofkd3369!",
         "place": "23",
-        "time_no": "736",
+        "time_no": "741",
         "team_name": "박지해",
         "users": "4",
         "purpose": "테니스",
