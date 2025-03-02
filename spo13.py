@@ -10,16 +10,36 @@ import datetime
 import easyocr
 import re
 import schedule
-from webdriver_manager.chrome import ChromeDriverManager
+import os
 
 # 실제 운영용 설정
 reservation_settings = [
     {   
-        "username": "fnlunasea",
+        "username": "fnlunasea1",
         "password": "luna9833!",
         "place": "21",
         "time_no": "693",
         "team_name": "임선수",
+        "users": "4",
+        "purpose": "테니스",
+        "discount_reason": "다자녀가정"
+    },
+    {   
+        "username": "hg8501081",
+        "password": "nigimi36!!",
+        "place": "23",
+        "time_no": "741",
+        "team_name": "김형균",
+        "users": "4",
+        "purpose": "테니스",
+        "discount_reason": "다자녀가정"
+    },
+    {   
+        "username": "jihae0716",
+        "password": "Wlgofkd3369!",
+        "place": "23",
+        "time_no": "736",
+        "team_name": "박지해",
         "users": "4",
         "purpose": "테니스",
         "discount_reason": "다자녀가정"
@@ -35,7 +55,6 @@ def setup_chrome_options():
     return chrome_options
 
 def get_time_range(time_no):
-    # 기존 time_mapping 코드 유지...
     time_mapping = {
         '686': '0600%3B0800', #1번
         '687': '0800%3B1000',
@@ -97,11 +116,13 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
     print(f"예약 프로세스 시작 - {team_name}")
     chrome_options = setup_chrome_options()
     
-    driver_path = ChromeDriverManager().install()
-    service = Service(driver_path)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    # 크롬 실행 경로 직접 지정
+    chrome_path = "/usr/bin/google-chrome"
+    service = Service(executable_path=chrome_path)
     
     try:
+        driver = webdriver.Chrome(options=chrome_options)
+        
         # 로그인
         print("웹사이트 접속 중...")
         driver.get('https://nrsv.spo1.or.kr/fmcs/42?center=SPOONE&part=11&place=24')
@@ -143,7 +164,10 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         time_range = get_time_range(time_no)
         dynamic_url = f"https://nrsv.spo1.or.kr/fmcs/42?facilities_type=T&center=SPOONE&part=11&base_date={target_date_str}&action=write&place={place}&comcd=SPOONE&part_cd=11&place_cd={place}&time_no={time_no}%3B2%ED%9A%8C%EC%B0%A8%3B{time_range}%3B1&rent_type=1001&rent_date={target_date_str}"
 
-        
+        # 09:00까지 대기
+        print("09:00까지 대기 중...")
+        wait_for_target_time(9, 0, 0)
+
         # 예약 페이지 열릴 때까지 새로고침
         print("예약 페이지 새로고침 시작...")
         refresh_count = 0
@@ -218,7 +242,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
 
         # 예약 시간까지 대기
         print("CAPTCHA 완료, 예약 시간 대기 중...")
-        wait_for_target_time(9, 0, 7)  # 반드시 09:00:06까지 대기
+        wait_for_target_time(9, 0, 6)  # 반드시 09:00:06까지 대기
 
         # 최종 예약 버튼 클릭
         print("최종 예약 버튼 클릭")
@@ -260,9 +284,7 @@ def run_reservation():
 def main():
     print("예약 스케줄러 초기화 중...")
     # 매주 월요일 08:58에 실행되도록 설정
-    # schedule.every().monday.at("08:58").do(run_reservation)
-    schedule.every().day.at("08:58").do(run_reservation)
-
+    schedule.every().monday.at("08:58").do(run_reservation)
     
     print("스케줄러 시작됨. 다음 실행 시각까지 대기 중...")
     while True:
