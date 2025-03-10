@@ -37,9 +37,8 @@ def setup_chrome_options(unique_id):
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--window-size=1920,1080')
     chrome_options.add_argument('--disable-cache')
-    # 고유한 user-data-dir 강제 적용
-    chrome_options.add_argument(f'--user-data-dir=/tmp/chrome-data-{unique_id}')
-    # 기본 디렉토리 사용 방지
+    chrome_options.add_argument('--disable-cookies')  # 추가
+    chrome_options.add_argument('--incognito')  # 추가
     chrome_options.add_argument('--disable-default-apps')
     chrome_options.add_argument('--no-first-run')
     return chrome_options
