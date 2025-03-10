@@ -21,9 +21,12 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# ChromeDriver 설치 및 권한 설정
+# ChromeDriver 설치 (더 안정적인 방식)
 RUN CHROME_VERSION=$(google-chrome --version | grep -oE "[0-9]+\.[0-9]+\.[0-9]+") && \
-    wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$(wget -q -O - https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION})/chromedriver_linux64.zip" && \
+    echo "Chrome 버전: $CHROME_VERSION" && \
+    LATEST_RELEASE=$(wget -q -O - "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}") && \
+    echo "최신 ChromeDriver 버전: $LATEST_RELEASE" && \
+    wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/${LATEST_RELEASE}/chromedriver_linux64.zip" && \
     unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
     rm /tmp/chromedriver.zip && \
     chmod 755 /usr/local/bin/chromedriver
