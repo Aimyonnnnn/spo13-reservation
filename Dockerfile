@@ -4,27 +4,31 @@ FROM python:3.9-slim
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# 필요한 시스템 라이브러리 및 Chrome 특정 버전 설치
+# 필요한 시스템 라이브러리 설치
 RUN apt-get update && apt-get install -y \
     wget \
-    gnupg \
+    unzip \
     libgl1-mesa-glx \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
     libxrender-dev \
-    unzip \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable=134.0.6998.36-1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# ChromeDriver 고정 버전 설치 (134.0.6998.35)
-RUN wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/134.0.6998.35/chromedriver_linux64.zip" && \
-    unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
-    rm /tmp/chromedriver.zip && \
+# Chrome 134.0.6998.35 설치 (zip 파일 방식)
+RUN wget -O /tmp/chrome-linux64.zip "https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.35/linux64/chrome-linux64.zip" && \
+    unzip /tmp/chrome-linux64.zip -d /opt/ && \
+    rm /tmp/chrome-linux64.zip && \
+    ln -s /opt/chrome-linux64/chrome /usr/local/bin/google-chrome && \
+    chmod 755 /usr/local/bin/google-chrome
+
+# ChromeDriver 134.0.6998.35 설치
+RUN wget -O /tmp/chromedriver-linux64.zip "https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.35/linux64/chromedriver-linux64.zip" && \
+    unzip /tmp/chromedriver-linux64.zip -d /usr/local/bin/ && \
+    mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver && \
+    rm -rf /usr/local/bin/chromedriver-linux64 && \
+    rm /tmp/chromedriver-linux64.zip && \
     chmod 755 /usr/local/bin/chromedriver
 
 WORKDIR /app
