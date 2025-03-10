@@ -46,9 +46,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 애플리케이션 복사
 COPY . .
 
-# 캐시 경로 권한 설정
+# 캐시 경로 권한 설정 및 초기화
 RUN mkdir -p /tmp/chrome-data && chmod -R 777 /tmp/chrome-data && \
-    mkdir -p /.cache/selenium && chmod -R 777 /.cache/selenium
+    mkdir -p /.cache/selenium && chmod -R 777 /.cache/selenium && \
+    rm -rf /root/.config/google-chrome
 
 # 실행
 CMD ["python", "spo13.py"]
