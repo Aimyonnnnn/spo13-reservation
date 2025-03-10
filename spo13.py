@@ -2,7 +2,6 @@ import threading
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -14,27 +13,7 @@ import os
 
 # 실제 운영용 설정
 reservation_settings = [
-    {   
-        #"username": "fnlunasea1",
-        #"password": "luna9833!",
-        #"place": "21",
-        #"time_no": "693",
-        #"team_name": "임선수",
-        #"users": "4",
-        #"purpose": "테니스",
-        #"discount_reason": "다자녀가정"
-    },
-    {   
-        #"username": "hg8501081",
-        #"password": "nigimi36!!",
-        #"place": "23",
-        #"time_no": "741",
-        #"team_name": "김형균",
-        #"users": "4",
-        #"purpose": "테니스",
-        #"discount_reason": "다자녀가정"
-    },
-    {   
+    {
         "username": "jihae0716",
         "password": "Wlgofkd3369!",
         "place": "23",
@@ -44,6 +23,7 @@ reservation_settings = [
         "purpose": "테니스",
         "discount_reason": "다자녀가정"
     }
+    # 필요하면 다른 설정 추가
 ]
 
 def setup_chrome_options():
@@ -52,74 +32,41 @@ def setup_chrome_options():
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--window-size=1920,1080')
+    chrome_options.add_argument('--disable-cache')  # 캐시 비활성화
+    chrome_options.add_argument('--user-data-dir=/tmp/chrome-data')  # 임시 데이터 경로
     return chrome_options
 
 def get_time_range(time_no):
     time_mapping = {
-        '686': '0600%3B0800', #1번
-        '687': '0800%3B1000',
-        '688': '1000%3B1200',
-        '689': '1200%3B1400',
-        '690': '1400%3B1600',
-        '691': '1600%3B1800',
-        '692': '1800%3B2000',
-        '693': '2000%3B2200',
-        '701': '2000%3B2200',
-        '719': '0800%3B1000', #2번
-        '720': '1000%3B1200',
-        '721': '1200%3B1400',
-        '722': '1400%3B1600',
-        '723': '1600%3B1800',
-        '724': '1800%3B2000',
-        '725': '2000%3B2200',
-        '734': '0600%3B0800', #3번
-        '735': '0800%3B1000',
-        '736': '1000%3B1200',
-        '737': '1200%3B1400',
-        '738': '1400%3B1600',
-        '739': '1600%3B1800',
-        '740': '1800%3B2000',
-        '741': '2000%3B2200',
-        '758': '0600%3B0800', #4번
-        '759': '0800%3B1000',
-        '760': '1000%3B1200',
-        '761': '1200%3B1400',
-        '762': '1400%3B1600',
-        '763': '1600%3B1800',
-        '764': '1800%3B2000',
-        '765': '2000%3B2200',
-        '782': '0600%3B0800', #5번
-        '783': '0800%3B1000',
-        '784': '1000%3B1200',
-        '785': '1200%3B1400',
-        '786': '1400%3B1600',
-        '787': '1600%3B1800',
-        '788': '1800%3B2000',
-        '789': '2000%3B2200',
+        '686': '0600%3B0800', '687': '0800%3B1000', '688': '1000%3B1200', '689': '1200%3B1400',
+        '690': '1400%3B1600', '691': '1600%3B1800', '692': '1800%3B2000', '693': '2000%3B2200',
+        '701': '2000%3B2200', '719': '0800%3B1000', '720': '1000%3B1200', '721': '1200%3B1400',
+        '722': '1400%3B1600', '723': '1600%3B1800', '724': '1800%3B2000', '725': '2000%3B2200',
+        '734': '0600%3B0800', '735': '0800%3B1000', '736': '1000%3B1200', '737': '1200%3B1400',
+        '738': '1400%3B1600', '739': '1600%3B1800', '740': '1800%3B2000', '741': '2000%3B2200',
+        '758': '0600%3B0800', '759': '0800%3B1000', '760': '1000%3B1200', '761': '1200%3B1400',
+        '762': '1400%3B1600', '763': '1600%3B1800', '764': '1800%3B2000', '765': '2000%3B2200',
+        '782': '0600%3B0800', '783': '0800%3B1000', '784': '1000%3B1200', '785': '1200%3B1400',
+        '786': '1400%3B1600', '787': '1600%3B1800', '788': '1800%3B2000', '789': '2000%3B2200',
     }
     return time_mapping.get(time_no, 'unknown_time')
 
 def wait_for_target_time(target_hour, target_minute, target_second):
-    """지정된 시간까지 대기"""
     target_time = datetime.time(target_hour, target_minute, target_second)
-    
     while True:
         current_time = datetime.datetime.now().time()
         if current_time >= target_time:
             print(f"목표 시각 도달: {target_time}")
             break
-        if current_time.second % 5 == 0:  # 5초마다 한 번씩만 출력
+        if current_time.second % 5 == 0:
             print(f"대기 중: 현재 시각 {current_time}, 목표 시각 {target_time}")
-        time.sleep(0.1)  # 0.1초마다 체크
+        time.sleep(0.1)
 
 def reserve_court(username, password, place, time_no, team_name, users, purpose, discount_reason):
     print(f"예약 프로세스 시작 - {team_name}")
     chrome_options = setup_chrome_options()
     
-    # 크롬 실행 경로 직접 지정
-    chrome_path = "/usr/bin/google-chrome"
-    service = Service(executable_path=chrome_path)
-    
+    driver = None
     try:
         driver = webdriver.Chrome(options=chrome_options)
         
@@ -165,8 +112,8 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         dynamic_url = f"https://nrsv.spo1.or.kr/fmcs/42?facilities_type=T&center=SPOONE&part=11&base_date={target_date_str}&action=write&place={place}&comcd=SPOONE&part_cd=11&place_cd={place}&time_no={time_no}%3B2%ED%9A%8C%EC%B0%A8%3B{time_range}%3B1&rent_type=1001&rent_date={target_date_str}"
 
         # 09:00까지 대기
-        print("09:00까지 대기 중...")
-        wait_for_target_time(9, 0, 0)
+        #print("09:00까지 대기 중...")
+        #wait_for_target_time(9, 0, 0)
 
         # 예약 페이지 열릴 때까지 새로고침
         print("예약 페이지 새로고침 시작...")
@@ -181,7 +128,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
                 break
             except:
                 refresh_count += 1
-                if refresh_count % 5 == 0:  # 5회 새로고침마다 한 번씩만 출력
+                if refresh_count % 5 == 0:
                     print(f"예약 페이지 새로고침 중... (시도 횟수: {refresh_count})")
                 continue
 
@@ -242,7 +189,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
 
         # 예약 시간까지 대기
         print("CAPTCHA 완료, 예약 시간 대기 중...")
-        wait_for_target_time(9, 0, 7)  # 반드시 09:00:06까지 대기
+        wait_for_target_time(9, 0, 7)
 
         # 최종 예약 버튼 클릭
         print("최종 예약 버튼 클릭")
@@ -262,29 +209,38 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         print(traceback.format_exc())
     finally:
         print("브라우저 종료")
-        driver.quit()
+        if driver is not None:
+            driver.quit()
 
 def run_reservation():
-    """모든 예약을 동시에 실행하는 함수"""
     print(f"=== 예약 프로세스 시작 시각: {datetime.datetime.now()} ===")
     threads = []
     
-    # 각 예약을 별도의 스레드로 실행
     for setting in reservation_settings:
-        thread = threading.Thread(target=reserve_court, kwargs=setting)
+        thread = threading.Thread(
+            target=reserve_court,
+            kwargs={
+                'username': setting['username'],
+                'password': setting['password'],
+                'place': setting['place'],
+                'time_no': setting['time_no'],
+                'team_name': setting['team_name'],
+                'users': setting['users'],
+                'purpose': setting['purpose'],
+                'discount_reason': setting['discount_reason']
+            }
+        )
         threads.append(thread)
         thread.start()
 
-    # 모든 스레드가 완료될 때까지 대기
     for thread in threads:
         thread.join()
     
     print("=== 모든 예약 프로세스 완료 ===")
 
 def main():
-    print("예약 스케줄러 초기화 중...")
-    # 매주 월요일 08:58에 실행되도록 설정
-    schedule.every().monday.at("08:58").do(run_reservation)
+    #print("예약 스케줄러 초기화 중...")
+    #schedule.every().monday.at("08:58").do(run_reservation)
     
     print("스케줄러 시작됨. 다음 실행 시각까지 대기 중...")
     while True:
