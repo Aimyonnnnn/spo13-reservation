@@ -17,7 +17,7 @@ reservation_settings = [
         "username": "jihae0716",
         "password": "Wlgofkd3369!",
         "place": "23",
-        "time_no": "741",
+        "time_no": "739",
         "team_name": "박지해",
         "users": "4",
         "purpose": "테니스",
