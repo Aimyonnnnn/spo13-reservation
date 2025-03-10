@@ -4,7 +4,7 @@ FROM python:3.9-slim
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# 필요한 시스템 라이브러리 및 Chrome 설치
+# 필요한 시스템 라이브러리 및 Chrome 특정 버전 설치
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -17,16 +17,12 @@ RUN apt-get update && apt-get install -y \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
     && apt-get update \
-    && apt-get install -y google-chrome-stable \
+    && apt-get install -y google-chrome-stable=134.0.6998.36-1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# ChromeDriver 설치 (더 안정적인 방식)
-RUN CHROME_VERSION=$(google-chrome --version | grep -oE "[0-9]+\.[0-9]+\.[0-9]+") && \
-    echo "Chrome 버전: $CHROME_VERSION" && \
-    LATEST_RELEASE=$(wget -q -O - "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}") && \
-    echo "최신 ChromeDriver 버전: $LATEST_RELEASE" && \
-    wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/${LATEST_RELEASE}/chromedriver_linux64.zip" && \
+# ChromeDriver 고정 버전 설치 (134.0.6998.35)
+RUN wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/134.0.6998.35/chromedriver_linux64.zip" && \
     unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
     rm /tmp/chromedriver.zip && \
     chmod 755 /usr/local/bin/chromedriver
