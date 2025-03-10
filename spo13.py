@@ -36,7 +36,8 @@ def setup_chrome_options():
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--window-size=1920,1080')
     chrome_options.add_argument('--disable-cache')
-    chrome_options.add_argument('--user-data-dir=/tmp/chrome-data')
+    #chrome_options.add_argument('--user-data-dir=/tmp/chrome-data') 단일
+    #chrome_options.add_argument(f'--user-data-dir=/tmp/chrome-data-{unique_id}') 멀티
     return chrome_options
 
 def get_time_range(time_no):
