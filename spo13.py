@@ -11,6 +11,7 @@ import easyocr
 import re
 import schedule
 import os
+import shutil
 
 # Selenium Manager 비활성화
 os.environ["SELENIUM_MANAGER"] = "0"
@@ -36,8 +37,11 @@ def setup_chrome_options(unique_id):
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--window-size=1920,1080')
     chrome_options.add_argument('--disable-cache')
-    # 고유한 user-data-dir 설정
-    #chrome_options.add_argument(f'--user-data-dir=/tmp/chrome-data-{unique_id}')
+    # 고유한 user-data-dir 강제 적용
+    chrome_options.add_argument(f'--user-data-dir=/tmp/chrome-data-{unique_id}')
+    # 기본 디렉토리 사용 방지
+    chrome_options.add_argument('--disable-default-apps')
+    chrome_options.add_argument('--no-first-run')
     return chrome_options
 
 def get_time_range(time_no):
@@ -81,6 +85,12 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         else:
             print("ChromeDriver 파일이 존재하지 않음!")
         
+        # Chrome 기본 디렉토리 초기화
+        default_chrome_dir = "/root/.config/google-chrome"
+        if os.path.exists(default_chrome_dir):
+            shutil.rmtree(default_chrome_dir)
+            print(f"기본 Chrome 디렉토리 {default_chrome_dir} 삭제 완료")
+
         # ChromeDriver 로그 활성화
         service = Service(executable_path=chromedriver_path, log_path=f'/tmp/chromedriver-{unique_id}.log')
         driver = webdriver.Chrome(service=service, options=chrome_options)
