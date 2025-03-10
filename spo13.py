@@ -37,7 +37,7 @@ def setup_chrome_options(unique_id):
     chrome_options.add_argument('--window-size=1920,1080')
     chrome_options.add_argument('--disable-cache')
     # 고유한 user-data-dir 설정
-    chrome_options.add_argument(f'--user-data-dir=/tmp/chrome-data-{unique_id}')
+    #chrome_options.add_argument(f'--user-data-dir=/tmp/chrome-data-{unique_id}')
     return chrome_options
 
 def get_time_range(time_no):
