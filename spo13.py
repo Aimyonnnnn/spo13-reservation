@@ -12,7 +12,7 @@ import re
 import schedule
 import os
 
-# Selenium Manager 비활성화 (불필요한 자동 다운로드 방지)
+# Selenium Manager 비활성화
 os.environ["SELENIUM_MANAGER"] = "0"
 
 # 실제 운영용 설정
@@ -71,7 +71,6 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
     
     driver = None
     try:
-        # ChromeDriver 경로 확인
         chromedriver_path = '/usr/local/bin/chromedriver'
         print(f"ChromeDriver 경로 확인: {chromedriver_path}")
         if os.path.exists(chromedriver_path):
@@ -236,18 +235,9 @@ def run_reservation():
     print("=== 모든 예약 프로세스 완료 ===")
 
 def main():
-    # 테스트용 즉시 실행 모드
     print("즉시 예약 테스트 시작...")
     run_reservation()
     print("테스트 완료!")
-
-    # 운영용 스케줄러 모드 (운영 시 주석 해제)
-    # print("예약 스케줄러 초기화 중...")
-    # schedule.every().monday.at("08:58").do(run_reservation)
-    # print("스케줄러 시작됨. 다음 실행 시각까지 대기 중...")
-    # while True:
-    #     schedule.run_pending()
-    #     time.sleep(1)
 
 if __name__ == "__main__":
     main()
