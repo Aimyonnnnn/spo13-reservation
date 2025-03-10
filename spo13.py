@@ -78,7 +78,8 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         else:
             print("ChromeDriver 파일이 존재하지 않음!")
         
-        service = Service(executable_path=chromedriver_path)
+        # ChromeDriver 로그 활성화
+        service = Service(executable_path=chromedriver_path, log_path='/tmp/chromedriver.log')
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
         print("웹사이트 접속 중...")
@@ -118,7 +119,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         target_date = now + datetime.timedelta(days=7)
         target_date_str = target_date.strftime('%Y%m%d')
         time_range = get_time_range(time_no)
-        dynamic_url = f"https://nrsv.spo1.or.kr/fmcs/42?facilities_type=T&center=SPOONE&part=11&base_date={target_date_str}&action=write&place={place}&comcd=SPOONE&part_cd=11&place_cd={place}&time_no={time_no}%3B2%ED%9A%8C%EC%B0%A8%3B{time_range}%3B1&rent_type=1001&rent_date={target_date_str}"
+        dynamic_url = f"https://nrsv.spo1.or.kr/fmcs/42?facilities_type=T¢er=SPOONE&part=11&base_date={target_date_str}&action=write&place={place}&comcd=SPOONE&part_cd=11&place_cd={place}&time_no={time_no}%3B2%ED%9A%8C%EC%B0%A8%3B{time_range}%3B1&rent_type=1001&rent_date={target_date_str}"
 
         print("예약 페이지 새로고침 시작...")
         refresh_count = 0
