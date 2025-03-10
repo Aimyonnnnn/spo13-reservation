@@ -29,15 +29,15 @@ reservation_settings = [
     }
 ]
 
-def setup_chrome_options():
+def setup_chrome_options(unique_id):
     chrome_options = Options()
     chrome_options.add_argument('--headless=new')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--window-size=1920,1080')
     chrome_options.add_argument('--disable-cache')
-    #chrome_options.add_argument('--user-data-dir=/tmp/chrome-data') 단일
-    #chrome_options.add_argument(f'--user-data-dir=/tmp/chrome-data-{unique_id}') 멀티
+    # 고유한 user-data-dir 설정
+    chrome_options.add_argument(f'--user-data-dir=/tmp/chrome-data-{unique_id}')
     return chrome_options
 
 def get_time_range(time_no):
@@ -68,7 +68,9 @@ def wait_for_target_time(target_hour, target_minute, target_second):
 
 def reserve_court(username, password, place, time_no, team_name, users, purpose, discount_reason):
     print(f"예약 프로세스 시작 - {team_name}")
-    chrome_options = setup_chrome_options()
+    # 고유한 ID 생성 (스레드 ID와 타임스탬프 조합)
+    unique_id = f"{threading.get_ident()}-{int(time.time())}"
+    chrome_options = setup_chrome_options(unique_id)
     
     driver = None
     try:
@@ -80,7 +82,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
             print("ChromeDriver 파일이 존재하지 않음!")
         
         # ChromeDriver 로그 활성화
-        service = Service(executable_path=chromedriver_path, log_path='/tmp/chromedriver.log')
+        service = Service(executable_path=chromedriver_path, log_path=f'/tmp/chromedriver-{unique_id}.log')
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
         print("웹사이트 접속 중...")
