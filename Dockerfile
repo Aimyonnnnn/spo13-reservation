@@ -29,8 +29,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 애플리케이션 복사
 COPY . .
 
-# 크롬 드라이버 권한 설정
-RUN chmod -R 755 /usr/bin/google-chrome
+# 크롬과 캐시 경로 권한 설정
+RUN chmod -R 755 /usr/bin/google-chrome && \
+    mkdir -p /tmp/chrome-data && \
+    chmod -R 777 /tmp/chrome-data
 
 # 실행
 CMD ["python", "spo13.py"]
