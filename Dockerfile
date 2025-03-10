@@ -4,7 +4,7 @@ FROM python:3.9-slim
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# 필요한 시스템 라이브러리 설치
+# 필요한 시스템 라이브러리 설치 (Chrome과 ChromeDriver 실행에 필요)
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -13,6 +13,12 @@ RUN apt-get update && apt-get install -y \
     libsm6 \
     libxext6 \
     libxrender-dev \
+    libnss3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libpango-1.0-0 \
+    libgbm1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
