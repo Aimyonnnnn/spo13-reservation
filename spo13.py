@@ -12,6 +12,9 @@ import re
 import schedule
 import os
 
+# Selenium Manager 비활성화 (불필요한 자동 다운로드 방지)
+os.environ["SELENIUM_MANAGER"] = "0"
+
 # 실제 운영용 설정
 reservation_settings = [
     {
@@ -32,8 +35,8 @@ def setup_chrome_options():
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--window-size=1920,1080')
-    chrome_options.add_argument('--disable-cache')  # 캐시 비활성화
-    chrome_options.add_argument('--user-data-dir=/tmp/chrome-data')  # 임시 데이터 경로
+    chrome_options.add_argument('--disable-cache')
+    chrome_options.add_argument('--user-data-dir=/tmp/chrome-data')
     return chrome_options
 
 def get_time_range(time_no):
@@ -79,7 +82,6 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         service = Service(executable_path=chromedriver_path)
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
-        # 로그인
         print("웹사이트 접속 중...")
         driver.get('https://nrsv.spo1.or.kr/fmcs/42?center=SPOONE&part=11&place=24')
         
@@ -113,18 +115,12 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         driver.switch_to.window(main_window)
         print("로그인 완료")
 
-        # 예약 페이지 URL 준비
         now = datetime.datetime.now()
         target_date = now + datetime.timedelta(days=7)
         target_date_str = target_date.strftime('%Y%m%d')
         time_range = get_time_range(time_no)
         dynamic_url = f"https://nrsv.spo1.or.kr/fmcs/42?facilities_type=T&center=SPOONE&part=11&base_date={target_date_str}&action=write&place={place}&comcd=SPOONE&part_cd=11&place_cd={place}&time_no={time_no}%3B2%ED%9A%8C%EC%B0%A8%3B{time_range}%3B1&rent_type=1001&rent_date={target_date_str}"
 
-        # 테스트용으로 대기 비활성화 (운영 시 주석 해제)
-        # print("09:00까지 대기 중...")
-        # wait_for_target_time(9, 0, 0)
-
-        # 예약 페이지 열릴 때까지 새로고침
         print("예약 페이지 새로고침 시작...")
         refresh_count = 0
         while True:
@@ -141,7 +137,6 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
                     print(f"예약 페이지 새로고침 중... (시도 횟수: {refresh_count})")
                 continue
 
-        # 예약 정보 입력
         print("예약 정보 입력 중...")
         team_name_field.send_keys(team_name)
         users_field = driver.find_element(By.XPATH, '//*[@id="users"]')
@@ -153,7 +148,6 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         agree_check = driver.find_element(By.XPATH, '//*[@id="agree_use1"]')
         agree_check.click()
 
-        # CAPTCHA 처리
         print("CAPTCHA 처리 시작...")
         reader = easyocr.Reader(['ko', 'en'])
         captcha_attempts = 0
@@ -196,11 +190,6 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
             print("CAPTCHA 실패")
             return
 
-        # 테스트용으로 대기 비활성화 (운영 시 주석 해제)
-        # print("CAPTCHA 완료, 예약 시간 대기 중...")
-        # wait_for_target_time(9, 0, 7)
-
-        # 최종 예약 버튼 클릭
         print("최종 예약 버튼 클릭")
         facility_reserve = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="writeForm"]/fieldset/p[2]/button/span'))
@@ -208,7 +197,6 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         facility_reserve.click()
         print(f"{team_name} 예약 완료!")
 
-        # 결과 확인을 위해 10초 대기
         print("예약 결과 확인을 위해 10초 대기...")
         time.sleep(10)
 
