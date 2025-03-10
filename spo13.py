@@ -2,6 +2,7 @@ import threading
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -23,7 +24,6 @@ reservation_settings = [
         "purpose": "테니스",
         "discount_reason": "다자녀가정"
     }
-    # 필요하면 다른 설정 추가
 ]
 
 def setup_chrome_options():
@@ -68,7 +68,16 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
     
     driver = None
     try:
-        driver = webdriver.Chrome(options=chrome_options)
+        # ChromeDriver 경로 확인
+        chromedriver_path = '/usr/local/bin/chromedriver'
+        print(f"ChromeDriver 경로 확인: {chromedriver_path}")
+        if os.path.exists(chromedriver_path):
+            print("ChromeDriver 파일 존재함")
+        else:
+            print("ChromeDriver 파일이 존재하지 않음!")
+        
+        service = Service(executable_path=chromedriver_path)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
         
         # 로그인
         print("웹사이트 접속 중...")
@@ -239,12 +248,12 @@ def run_reservation():
     print("=== 모든 예약 프로세스 완료 ===")
 
 def main():
-    # 테스트용 즉시 실행 모드 (테스트 시 아래 주석 해제, 운영 시 주석 처리)
+    # 테스트용 즉시 실행 모드
     print("즉시 예약 테스트 시작...")
     run_reservation()
     print("테스트 완료!")
 
-    # 운영용 스케줄러 모드 (운영 시 아래 주석 해제, 테스트 시 주석 처리)
+    # 운영용 스케줄러 모드 (운영 시 주석 해제)
     # print("예약 스케줄러 초기화 중...")
     # schedule.every().monday.at("08:58").do(run_reservation)
     # print("스케줄러 시작됨. 다음 실행 시각까지 대기 중...")
