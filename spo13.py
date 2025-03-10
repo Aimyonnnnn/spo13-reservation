@@ -111,9 +111,9 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         time_range = get_time_range(time_no)
         dynamic_url = f"https://nrsv.spo1.or.kr/fmcs/42?facilities_type=T&center=SPOONE&part=11&base_date={target_date_str}&action=write&place={place}&comcd=SPOONE&part_cd=11&place_cd={place}&time_no={time_no}%3B2%ED%9A%8C%EC%B0%A8%3B{time_range}%3B1&rent_type=1001&rent_date={target_date_str}"
 
-        # 09:00까지 대기
-        #print("09:00까지 대기 중...")
-        #wait_for_target_time(9, 0, 0)
+        # 테스트용으로 대기 비활성화 (운영 시 주석 해제)
+        # print("09:00까지 대기 중...")
+        # wait_for_target_time(9, 0, 0)
 
         # 예약 페이지 열릴 때까지 새로고침
         print("예약 페이지 새로고침 시작...")
@@ -187,9 +187,9 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
             print("CAPTCHA 실패")
             return
 
-        # 예약 시간까지 대기
-        print("CAPTCHA 완료, 예약 시간 대기 중...")
-        wait_for_target_time(9, 0, 7)
+        # 테스트용으로 대기 비활성화 (운영 시 주석 해제)
+        # print("CAPTCHA 완료, 예약 시간 대기 중...")
+        # wait_for_target_time(9, 0, 7)
 
         # 최종 예약 버튼 클릭
         print("최종 예약 버튼 클릭")
@@ -239,13 +239,18 @@ def run_reservation():
     print("=== 모든 예약 프로세스 완료 ===")
 
 def main():
-    #print("예약 스케줄러 초기화 중...")
-    #schedule.every().monday.at("08:58").do(run_reservation)
-    
-    print("스케줄러 시작됨. 다음 실행 시각까지 대기 중...")
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # 테스트용 즉시 실행 모드 (테스트 시 아래 주석 해제, 운영 시 주석 처리)
+    print("즉시 예약 테스트 시작...")
+    run_reservation()
+    print("테스트 완료!")
+
+    # 운영용 스케줄러 모드 (운영 시 아래 주석 해제, 테스트 시 주석 처리)
+    # print("예약 스케줄러 초기화 중...")
+    # schedule.every().monday.at("08:58").do(run_reservation)
+    # print("스케줄러 시작됨. 다음 실행 시각까지 대기 중...")
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)
 
 if __name__ == "__main__":
     main()
