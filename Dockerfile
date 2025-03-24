@@ -1,12 +1,11 @@
 FROM python:3.9-slim
 
-# 필요한 패키지 설치
+# 필요한 패키지 설치 (libindicator7 제거, Chrome에 필수적인 의존성만 유지)
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
     libxss1 \
     libappindicator1 \
-    libindicator7 \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
     && apt-get update \
