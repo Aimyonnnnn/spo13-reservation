@@ -1,6 +1,6 @@
-FROM python:3.9-slim
+# 빌드 단계
+FROM python:3.9-slim AS builder
 
-# 필요한 패키지 설치 (libindicator7 제거, Chrome에 필수적인 의존성만 유지)
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -13,13 +13,24 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Python 의존성 설치
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 애플리케이션 파일 복사
+# 실행 단계
+FROM python:3.9-slim
+
+RUN apt-get update && apt-get install -y \
+    libxss1 \
+    libappindicator1 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/bin/google-chrome /usr/bin/google-chrome
+COPY --from=builder /usr/lib/chromium /usr/lib/chromium
+COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
 COPY . /app
 WORKDIR /app
 
-# 실행 명령어
 CMD ["python", "spo13.py"]
