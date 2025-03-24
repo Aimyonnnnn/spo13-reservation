@@ -15,11 +15,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 # 실제 운영용 설정
 reservation_settings = [
     {   
-        "username": "fnlunasea",
-        "password": "luna9833!",
-        "place": "21",
-        "time_no": "693",
-        "team_name": "임선수",
+        "username": "hg850108",
+        "password": "nigimi36!!",
+        "place": "22",
+        "time_no": "723",
+        "team_name": "김형균",
         "users": "4",
         "purpose": "테니스",
         "discount_reason": "다자녀가정"
