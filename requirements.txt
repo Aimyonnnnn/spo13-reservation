@@ -1,9 +1,6 @@
-numpy==1.23.5
-opencv-python-headless==4.8.0.74
-selenium==4.15.2
-webdriver-manager==4.0.1
-schedule==1.2.1
---find-links https://download.pytorch.org/whl/torch_stable.html
-torch==2.0.0+cpu
-torchvision==0.15.1+cpu
-easyocr==1.7.1
+selenium==4.15.2      # 웹 자동화 (필수)
+webdriver-manager==4.0.1  # 크롬드라이버 관리 (필수)
+schedule==1.2.1       # 스케줄러 (필수)
+easyocr==1.7.1        # 캡챠 인식 (필수)
+torch==2.0.0          # AI 엔진 (easyocr에 필요)
+torchvision==0.15.1   # AI 이미지 처리 (easyocr에 필요)
