@@ -1,10 +1,25 @@
-FROM python:3.9-slim   # 기존: python:3.9
-# slim 버전: 기본 파이썬 기능만 포함한 가벼운 버전
+FROM python:3.9-slim
 
+# 필요한 패키지 설치 및 Chrome 설치
 RUN apt-get update && apt-get install -y \
-    wget \            # 크롬 설치에 필요
-    gnupg \          # 크롬 설치에 필요
+    wget \
+    gnupg \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
     && apt-get update \
-    && apt-get install -y google-chrome-stable \  # 크롬 브라우저 설치
+    && apt-get install -y google-chrome-stable \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# Python 의존성 설치
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 애플리케이션 코드 복사
+COPY . .
+
+# 실행 명령어
+CMD ["python", "main.py"]

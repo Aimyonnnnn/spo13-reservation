@@ -9,7 +9,7 @@ import time
 import datetime
 import easyocr
 import re
-import schedule
+# import schedule  # 주석 처리
 from webdriver_manager.chrome import ChromeDriverManager
 
 # 실제 운영용 설정
@@ -141,7 +141,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         target_date = now + datetime.timedelta(days=7)
         target_date_str = target_date.strftime('%Y%m%d')
         time_range = get_time_range(time_no)
-        dynamic_url = f"https://nrsv.spo1.or.kr/fmcs/42?facilities_type=T&center=SPOONE&part=11&base_date={target_date_str}&action=write&place={place}&comcd=SPOONE&part_cd=11&place_cd={place}&time_no={time_no}%3B2%ED%9A%8C%EC%B0%A8%3B{time_range}%3B1&rent_type=1001&rent_date={target_date_str}"
+        dynamic_url = f"https://nrsv.spo1.or.kr/fmcs/42?facilities_type=T¢er=SPOONE&part=11&base_date={target_date_str}&action=write&place={place}&comcd=SPOONE&part_cd=11&place_cd={place}&time_no={time_no}%3B2%ED%9A%8C%EC%B0%A8%3B{time_range}%3B1&rent_type=1001&rent_date={target_date_str}"
 
         
         # 예약 페이지 열릴 때까지 새로고침
@@ -175,7 +175,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
 
         # CAPTCHA 처리
         print("CAPTCHA 처리 시작...")
-        reader = easyocr.Reader(['ko', 'en'])
+        reader = easyocr.Reader(['ko', 'en'], gpu=False)  # GPU 비활성화        captcha_attempts = 0
         captcha_attempts = 0
         max_captcha_attempts = 10
         captcha_success = False
@@ -216,9 +216,9 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
             print("CAPTCHA 실패")
             return
 
-        # 예약 시간까지 대기
-        print("CAPTCHA 완료, 예약 시간 대기 중...")
-        wait_for_target_time(9, 0, 6)  # 반드시 09:00:06까지 대기
+        # 예약 시간까지 대기 (주석 처리)
+        # print("CAPTCHA 완료, 예약 시간 대기 중...")
+        # wait_for_target_time(9, 0, 6)  # 반드시 09:00:06까지 대기
 
         # 최종 예약 버튼 클릭
         print("최종 예약 버튼 클릭")
@@ -258,14 +258,18 @@ def run_reservation():
     print("=== 모든 예약 프로세스 완료 ===")
 
 def main():
-    print("예약 스케줄러 초기화 중...")
-    # 매주 월요일 08:58에 실행되도록 설정
-    schedule.every().monday.at("08:58").do(run_reservation)
+    # print("예약 스케줄러 초기화 중...")
+    # # 매주 월요일 08:58에 실행되도록 설정
+    # schedule.every().monday.at("08:58").do(run_reservation)
     
-    print("스케줄러 시작됨. 다음 실행 시각까지 대기 중...")
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # print("스케줄러 시작됨. 다음 실행 시각까지 대기 중...")
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)
+    
+    # 즉시 실행
+    print("즉시 예약 실행 시작...")
+    run_reservation()
 
 if __name__ == "__main__":
     main()
