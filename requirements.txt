@@ -2,5 +2,5 @@ selenium==4.15.2
 webdriver-manager==4.0.1
 schedule==1.2.1
 easyocr==1.7.1
-torch==2.0.0+cpu
-torchvision==0.15.1+cpu
+torch==2.0.0
+torchvision==0.15.0
