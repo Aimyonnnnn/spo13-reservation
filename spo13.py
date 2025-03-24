@@ -11,20 +11,15 @@ import easyocr
 import re
 import schedule
 from webdriver_manager.chrome import ChromeDriverManager
-import os
-import logging
 
-# 로깅 설정
-logging.basicConfig(level=logging.INFO, filename='/var/log/spo13.log')
-
-# 실제 운영용 설정 (환경 변수로 대체 가능)
+# 실제 운영용 설정
 reservation_settings = [
     {   
-        "username": os.getenv("USERNAME", "hg8501081"),
-        "password": os.getenv("PASSWORD", "nigimi36!!"),
-        "place": "22",
-        "time_no": "723",
-        "team_name": "김형",
+        "username": "fnlunasea",
+        "password": "luna9833!",
+        "place": "21",
+        "time_no": "693",
+        "team_name": "임선수",
         "users": "4",
         "purpose": "테니스",
         "discount_reason": "다자녀가정"
@@ -37,10 +32,10 @@ def setup_chrome_options():
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--window-size=1920,1080')
-    chrome_options.add_argument('--disable-gpu')  # GPU 의존성 제거
     return chrome_options
 
 def get_time_range(time_no):
+    # 기존 time_mapping 코드 유지...
     time_mapping = {
         '686': '0600%3B0800', #1번
         '687': '0800%3B1000',
@@ -92,14 +87,14 @@ def wait_for_target_time(target_hour, target_minute, target_second):
     while True:
         current_time = datetime.datetime.now().time()
         if current_time >= target_time:
-            logging.info(f"목표 시각 도달: {target_time}")
+            print(f"목표 시각 도달: {target_time}")
             break
-        if current_time.second % 5 == 0:
-            logging.info(f"대기 중: 현재 시각 {current_time}, 목표 시각 {target_time}")
-        time.sleep(0.1)
+        if current_time.second % 5 == 0:  # 5초마다 한 번씩만 출력
+            print(f"대기 중: 현재 시각 {current_time}, 목표 시각 {target_time}")
+        time.sleep(0.1)  # 0.1초마다 체크
 
 def reserve_court(username, password, place, time_no, team_name, users, purpose, discount_reason):
-    logging.info(f"예약 프로세스 시작 - {team_name}")
+    print(f"예약 프로세스 시작 - {team_name}")
     chrome_options = setup_chrome_options()
     
     driver_path = ChromeDriverManager().install()
@@ -107,10 +102,11 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
     driver = webdriver.Chrome(service=service, options=chrome_options)
     
     try:
-        logging.info("웹사이트 접속 중...")
+        # 로그인
+        print("웹사이트 접속 중...")
         driver.get('https://nrsv.spo1.or.kr/fmcs/42?center=SPOONE&part=11&place=24')
         
-        logging.info("로그인 시도 중...")
+        print("로그인 시도 중...")
         login_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="process_login"]/span'))
         )
@@ -132,21 +128,24 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
 
         try:
             alert = WebDriverWait(driver, 3).until(EC.alert_is_present())
-            logging.info(f"로그인 알림: {alert.text}")
+            print(f"로그인 알림: {alert.text}")
             alert.accept()
         except:
-            logging.info("로그인 알림 없음")
+            print("로그인 알림 없음")
 
         driver.switch_to.window(main_window)
-        logging.info("로그인 완료")
+        print("로그인 완료")
 
+        # 예약 페이지 URL 준비
         now = datetime.datetime.now()
         target_date = now + datetime.timedelta(days=7)
         target_date_str = target_date.strftime('%Y%m%d')
         time_range = get_time_range(time_no)
-        dynamic_url = f"https://nrsv.spo1.or.kr/fmcs/42?facilities_type=T¢er=SPOONE&part=11&base_date={target_date_str}&action=write&place={place}&comcd=SPOONE&part_cd=11&place_cd={place}&time_no={time_no}%3B2%ED%9A%8C%EC%B0%A8%3B{time_range}%3B1&rent_type=1001&rent_date={target_date_str}"
+        dynamic_url = f"https://nrsv.spo1.or.kr/fmcs/42?facilities_type=T&center=SPOONE&part=11&base_date={target_date_str}&action=write&place={place}&comcd=SPOONE&part_cd=11&place_cd={place}&time_no={time_no}%3B2%ED%9A%8C%EC%B0%A8%3B{time_range}%3B1&rent_type=1001&rent_date={target_date_str}"
 
-        logging.info("예약 페이지 새로고침 시작...")
+        
+        # 예약 페이지 열릴 때까지 새로고침
+        print("예약 페이지 새로고침 시작...")
         refresh_count = 0
         while True:
             try:
@@ -154,15 +153,16 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
                 team_name_field = WebDriverWait(driver, 1).until(
                     EC.presence_of_element_located((By.XPATH, '//*[@id="team_nm"]'))
                 )
-                logging.info("예약 페이지 접속 성공!")
+                print("예약 페이지 접속 성공!")
                 break
             except:
                 refresh_count += 1
-                if refresh_count % 5 == 0:
-                    logging.info(f"예약 페이지 새로고침 중... (시도 횟수: {refresh_count})")
+                if refresh_count % 5 == 0:  # 5회 새로고침마다 한 번씩만 출력
+                    print(f"예약 페이지 새로고침 중... (시도 횟수: {refresh_count})")
                 continue
 
-        logging.info("예약 정보 입력 중...")
+        # 예약 정보 입력
+        print("예약 정보 입력 중...")
         team_name_field.send_keys(team_name)
         users_field = driver.find_element(By.XPATH, '//*[@id="users"]')
         users_field.send_keys(users)
@@ -173,7 +173,8 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
         agree_check = driver.find_element(By.XPATH, '//*[@id="agree_use1"]')
         agree_check.click()
 
-        logging.info("CAPTCHA 처리 시작...")
+        # CAPTCHA 처리
+        print("CAPTCHA 처리 시작...")
         reader = easyocr.Reader(['ko', 'en'])
         captcha_attempts = 0
         max_captcha_attempts = 10
@@ -183,7 +184,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
             captchaPng = driver.find_element(By.XPATH, '//*[@id="captcha_string_image"]')
             result = reader.readtext(captchaPng.screenshot_as_png, detail=0)
             captchaValue = ''.join(re.findall(r'\d+', result[0]))
-            logging.info(f"CAPTCHA 시도 중: {captchaValue}")
+            print(f"CAPTCHA 시도 중: {captchaValue}")
 
             captchaText = driver.find_element(By.XPATH, '//*[@id="captcha"]')
             captchaText.send_keys(captchaValue)
@@ -194,7 +195,7 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
             try:
                 alert = WebDriverWait(driver, 3).until(EC.alert_is_present())
                 alert_text = alert.text
-                logging.info(f"CAPTCHA 결과: {alert_text}")
+                print(f"CAPTCHA 결과: {alert_text}")
 
                 if "입력문자가 맞지않습니다." in alert_text:
                     alert.accept()
@@ -204,55 +205,67 @@ def reserve_court(username, password, place, time_no, team_name, users, purpose,
                 elif "입력문자가 맞습니다." in alert_text:
                     alert.accept()
                     captcha_success = True
-                    logging.info("CAPTCHA 통과!")
+                    print("CAPTCHA 통과!")
                     break
             except:
-                logging.info("CAPTCHA 알림 없음, 통과로 간주")
+                print("CAPTCHA 알림 없음, 통과로 간주")
                 captcha_success = True
                 break
 
         if not captcha_success:
-            logging.info("CAPTCHA 실패")
+            print("CAPTCHA 실패")
             return
 
-        logging.info("CAPTCHA 완료, 예약 시간 대기 중...")
-        # wait_for_target_time(9, 0, 7)  # 반드시 09:00:06까지 대기
+        # 예약 시간까지 대기
+        print("CAPTCHA 완료, 예약 시간 대기 중...")
+        wait_for_target_time(9, 0, 6)  # 반드시 09:00:06까지 대기
 
-        logging.info("최종 예약 버튼 클릭")
+        # 최종 예약 버튼 클릭
+        print("최종 예약 버튼 클릭")
         facility_reserve = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="writeForm"]/fieldset/p[2]/button/span'))
         )
         facility_reserve.click()
-        logging.info(f"{team_name} 예약 완료!")
+        print(f"{team_name} 예약 완료!")
 
-        logging.info("예약 결과 확인을 위해 10초 대기...")
+        # 결과 확인을 위해 10초 대기
+        print("예약 결과 확인을 위해 10초 대기...")
         time.sleep(10)
 
     except Exception as e:
-        logging.error(f"오류 발생: {str(e)}")
+        print(f"오류 발생: {str(e)}")
         import traceback
-        logging.error(traceback.format_exc())
+        print(traceback.format_exc())
     finally:
-        logging.info("브라우저 종료")
+        print("브라우저 종료")
         driver.quit()
 
 def run_reservation():
-    logging.info(f"=== 예약 프로세스 시작 시각: {datetime.datetime.now()} ===")
+    """모든 예약을 동시에 실행하는 함수"""
+    print(f"=== 예약 프로세스 시작 시각: {datetime.datetime.now()} ===")
     threads = []
     
+    # 각 예약을 별도의 스레드로 실행
     for setting in reservation_settings:
         thread = threading.Thread(target=reserve_court, kwargs=setting)
         threads.append(thread)
         thread.start()
 
+    # 모든 스레드가 완료될 때까지 대기
     for thread in threads:
         thread.join()
     
-    logging.info("=== 모든 예약 프로세스 완료 ===")
+    print("=== 모든 예약 프로세스 완료 ===")
 
 def main():
-    logging.info("예약 즉시 실행 중...")
-    run_reservation()
+    print("예약 스케줄러 초기화 중...")
+    # 매주 월요일 08:58에 실행되도록 설정
+    schedule.every().monday.at("08:58").do(run_reservation)
+    
+    print("스케줄러 시작됨. 다음 실행 시각까지 대기 중...")
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
