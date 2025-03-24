@@ -14,8 +14,8 @@ RUN apk add --no-cache \
     && apk update \
     && apk add --no-cache \
         chromium \
-        libglib2.0 \
-        libpango-1.0
+        glib \
+        pango
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -31,8 +31,10 @@ FROM python:3.9-alpine
 # 런타임에 필요한 패키지만 설치
 RUN apk add --no-cache \
     chromium \
-    libglib2.0 \
-    libpango-1.0 \
+    glib \
+    pango \
+    fontconfig \
+    freetype \
     && rm -rf /var/cache/apk/*
 
 # 작업 디렉토리 설정
