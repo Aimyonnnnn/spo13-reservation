@@ -1,15 +1,21 @@
 FROM python:3.9-slim
 
-# 필요한 패키지 설치 및 Chrome 설치
-RUN apt-get update && apt-get install -y \
+# 기본 패키지 설치
+RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     gnupg \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
-    && apt-get update \
-    && apt-get install -y \
-        google-chrome-stable \
-        libpango-1.0-0 \
+    libglib2.0-0 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Chrome 저장소 설정
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+
+# Chrome 및 libpango-1.0-0 설치
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    google-chrome-stable \
+    libpango-1.0-0 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
